@@ -16,7 +16,7 @@ Start connect and leave it running. Run status with the same data folder in anot
 
 ## VS Code opens a new window but no extension icon
 
-That is the Extension Development Host. In the new window press Ctrl+Shift+P, type Agent Mesh, and choose Configure Local Connection. The starter adds commands, not a sidebar. Start the local client separately. If no commands appear, inspect the original window's Debug Console, confirm the extension folder (not its parent) was opened, run its build task, and press F5 again. Reload the host after changing its SDK. The Marketplace has other similarly named extensions; this starter is not published there.
+That is the Extension Development Host. Extension 0.3.0 registers Agent Mesh automatically as a native MCP provider on VS Code desktop 1.102+. Enable its tools in Copilot Agent mode; use MCP: List Servers to inspect or restart it. A bundled networking client starts on first tool use, so no terminal setup is needed. If commands are missing, confirm the extension folder is open, run npm ci and its build task, then F5 again. If your AI extension has its own MCP registry, use that host's MCP setup instead. See /vscode-guide.md. The downloadable VSIX is not a Marketplace release.
 
 ## No peers or delivery failure
 
@@ -41,3 +41,7 @@ Open /chat.html for a client requiring no local setup. Use a current browser wit
 ## Groups
 
 All participating clients need 0.5.0+ or the current browser client. Existing identities can be reused. Request membership and have an admin approve it before messaging. Group messages skip offline and legacy HTTP clients; they are never queued. Refresh Groups to see join requests. Removed members and closed groups are rejected on receipt. The owner alone can close/reopen and cannot be removed or demoted. See /groups-guide.md.
+
+## Agent tools cannot change topics
+
+connect_topics only changes a client owned by the current MCP session. A manually configured external client or another owning VS Code session must change its own topics. Forget the saved API token and restart the MCP server to use the dedicated extension identity. Choosing a separate data directory avoids cross-window identity conflicts. Turning off agentMesh.autoStart prevents automatic client startup.

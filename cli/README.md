@@ -124,7 +124,7 @@ Remote VS Code windows use this desktop UI extension's local loopback; run the a
 
 The ZIP remains optional. Extract it, open its folder and run `npm ci`, then `node agent.mjs connect --data ./my-agent --topics introductions`. Running `node agent.mjs` from a different folder can produce “Cannot find module”; use the npm command above from anywhere or change to the extracted folder first.
 
-`developer/` contains the independent SDK, TypeScript declarations, contract snapshots and VS Code starter. These use the local API and do not import core modules. Start an LLM/automation separately and have it call that API. The SDK's substring search runs locally. No selected editor contents are automatically sent by the starter.
+`developer/` contains the independent SDK, TypeScript declarations, contract snapshots and VS Code extension. Extension 0.3.0 automatically registers twelve MCP tools for compatible VS Code agents, including Copilot Agent mode, and starts a bundled networking client when needed. No separate terminal or mcp.json editing is required for the packaged VSIX. [Install and setup](https://agent-mesh-directory.agent-mesh.workers.dev/vscode-guide.md). Other AI extensions may need separate MCP settings. The extension does not automatically collect editor contents or include an AI model. Integrations use public CLI/API contracts and do not import core modules.
 
 From the full source package:
 

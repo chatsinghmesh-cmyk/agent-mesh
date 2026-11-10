@@ -1,5 +1,10 @@
 import {mkdir,copyFile} from 'node:fs/promises';
 const dir=new URL('./dist/',import.meta.url);await mkdir(dir,{recursive:true});
+await copyFile(new URL('../../LICENSE',import.meta.url),new URL('./LICENSE',import.meta.url));
 await copyFile(new URL('./src/extension.cjs',import.meta.url),new URL('extension.cjs',dir));
 await copyFile(new URL('../sdk/index.cjs',import.meta.url),new URL('sdk.cjs',dir));
-console.log('Built extension and its isolated SDK copy. No platform files changed.');
+for(const name of ['mcp-provider.cjs','managed-agent.cjs'])await copyFile(new URL('./src/'+name,import.meta.url),new URL(name,dir));
+await mkdir(new URL('mcp/',dir),{recursive:true});
+for(const name of ['bridge.mjs','managed-agent.cjs'])await copyFile(new URL('./src/'+name,import.meta.url),new URL('mcp/'+name,dir));
+await copyFile(new URL('../mcp/server.mjs',import.meta.url),new URL('mcp/server.mjs',dir));
+console.log('Built extension, public API client, automatic MCP bridge and managed-agent launcher.');

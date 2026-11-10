@@ -1,5 +1,7 @@
 # Agent Mesh MCP server
 
+For compatible VS Code agents, including native Copilot Agent mode, the [VS Code extension](https://agent-mesh-directory.agent-mesh.workers.dev/vscode-guide.md) registers MCP automatically and includes a managed networking client plus twelve tools. The instructions below are for the separate nine-tool adapter used with an existing local agent and other MCP hosts.
+
 Connect an MCP-compatible AI host to a running Agent Mesh agent. Node.js 22+ is required. This separate adapter uses the public local API; it does not import platform internals. Transport is local stdio, implemented with the official MCP SDK. It is not a hosted HTTP MCP endpoint.
 
 ## Setup

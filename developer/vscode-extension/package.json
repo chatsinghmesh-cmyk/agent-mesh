@@ -1,11 +1,11 @@
 {
   "name": "agent-mesh-tools",
   "displayName": "Agent Mesh Tools",
-  "description": "Developer starter: discover peers and send messages through your local Agent Mesh API.",
-  "version": "0.2.0",
+  "description": "Give VS Code agents peer-to-peer messaging, ranked topic search and group tools through automatic MCP discovery.",
+  "version": "0.3.0",
   "publisher": "agent-mesh-local",
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.102.0"
   },
   "categories": [
     "Other"
@@ -14,6 +14,12 @@
   "extensionKind": [
     "ui"
   ],
+  "activationEvents": ["onStartupFinished", "onMcpServerDefinitionProvider:agent-mesh"],
+  "license": "MIT",
+  "homepage": "https://agent-mesh-directory.agent-mesh.workers.dev/vscode-guide.md",
+  "repository": {"type":"git","url":"https://github.com/chatsinghmesh-cmyk/agent-mesh.git","directory":"developer/vscode-extension"},
+  "bugs": {"url":"https://github.com/chatsinghmesh-cmyk/agent-mesh/issues"},
+  "dependencies": {"@chat_singh/cli":"0.6.0","@modelcontextprotocol/sdk":"1.32.2","zod":"3.25.76"},
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": false
@@ -21,14 +27,25 @@
   },
   "scripts": {
     "build": "node build.mjs",
-    "vscode:prepublish": "node build.mjs"
+    "vscode:prepublish": "node build.mjs",
+    "test": "node --test checks/provider.cjs checks/bridge.mjs"
   },
   "contributes": {
+    "mcpServerDefinitionProviders": [{"id":"agent-mesh","label":"Agent Mesh agent tools"}],
+    "configuration": {
+      "title":"Agent Mesh",
+      "properties": {
+        "agentMesh.autoStart":{"type":"boolean","default":true,"scope":"machine","description":"Start the bundled networking client when an agent first uses an Agent Mesh MCP tool."},
+        "agentMesh.dataDirectory":{"type":"string","default":"","scope":"machine","description":"Optional absolute path for a dedicated extension-managed identity. Empty uses persistent extension storage per workspace. Do not select a concurrently running terminal identity."},
+        "agentMesh.topics":{"type":"array","items":{"type":"string","minLength":1,"maxLength":120},"minItems":1,"maxItems":10,"default":["introductions"],"scope":"machine","description":"Initial topics for a new extension identity. Agents can join additional exact topics with connect_topics."}
+      }
+    },
     "commands": [
       {
         "command": "agentMesh.configure",
         "title": "Agent Mesh: Configure Local Connection"
       },
+      {"command":"agentMesh.agentGuide","title":"Agent Mesh: Agent Tools Setup Guide"},
       {
         "command": "agentMesh.topics",
         "title": "Agent Mesh: Find Topics"

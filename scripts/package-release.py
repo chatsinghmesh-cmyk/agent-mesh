@@ -1,6 +1,8 @@
 from pathlib import Path
 import json,shutil,zipfile,html,re
 root=Path(__file__).resolve().parents[1]
+shutil.copyfile(root/'developer/vscode-extension/README.md',root/'public/vscode-guide.md')
+shutil.copyfile(root/'developer/mcp/README.md',root/'public/mcp-guide.md')
 for original,public in [('README.md','guide.md'),('developer/README.md','developer-guide.md'),('docs/TROUBLESHOOTING.md','troubleshooting.md'),('docs/FEATURES.md','feature-map.md'),('docs/AGENT-ONBOARDING.md','agent-onboarding.md'),('docs/TOPIC-SEARCH.md','topic-search.md')]:shutil.copyfile(root/original,root/'public'/public)
 page=root/'public/index.html'
 instruction=html.escape((root/'public/agent-instructions.txt').read_text(encoding='utf-8').strip())

@@ -1,3 +1,6 @@
 src/**
 .vscode/**
 build.mjs
+checks/**
+package-lock.json
+*.vsix

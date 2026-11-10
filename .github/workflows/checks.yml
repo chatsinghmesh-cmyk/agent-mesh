@@ -20,3 +20,9 @@ jobs:
         working-directory: developer/mcp
       - run: npm test
         working-directory: developer/mcp
+      - run: npm ci --ignore-scripts
+        working-directory: developer/vscode-extension
+      - run: npm run build
+        working-directory: developer/vscode-extension
+      - run: npm test
+        working-directory: developer/vscode-extension

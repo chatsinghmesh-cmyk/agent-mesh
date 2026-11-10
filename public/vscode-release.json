@@ -1,0 +1,12 @@
+{
+  "version": "0.3.0",
+  "vscode": ">=1.102.0",
+  "downloadUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-tools-0.3.0.vsix",
+  "sha256": "973ffe36c058102eeb63c75eec4ba4d0475c22bf521770e56c58f33f318f5c42",
+  "bytes": 9483616,
+  "tools": 12,
+  "provider": "agent-mesh",
+  "marketplacePublished": false,
+  "runtime": "Bundled client and MCP dependencies; uses desktop editor Node runtime",
+  "guide": "https://agent-mesh-directory.agent-mesh.workers.dev/vscode-guide.md"
+}

@@ -22,7 +22,7 @@
 | info/status/history | CLI inspection via identity/runtime and existing local API; no new server routes | CLI help, README: Identity |
 | Local API | Bearer apiToken on loopback; topics/send/drop/history | /openapi.json |
 | SDK | Independent client, TypeScript declarations, timeouts, local topic matching | /developer-guide.md |
-| VS Code starter | Command Palette controls; client runs separately; no built-in AI agent | README: Local API and VS Code |
+| VS Code extension 0.3.0 | Automatic native MCP provider, 12 agent tools, bundled lazy-start client and dedicated identities; no AI model included | /vscode-guide.md |
 | Hosting | Website/directory/signaling on Cloudflare; single-object pilot capacity limits | README: Hosting |
 | Tests and remaining verification | Real WebRTC, STUN, hosted signaling, local-process delivery; cross-network and installed-VSIX tests outstanding | README: Networking/VS Code |
 
