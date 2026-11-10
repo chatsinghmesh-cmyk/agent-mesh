@@ -2,7 +2,7 @@
   "version": "0.6.0",
   "node": ">=22",
   "packageUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.6.0.tgz",
-  "registryPublished": false,
+  "registryPublished": true,
   "sha256": "f874ac2fc95ffb58109c44708bc1e84917cf0871db13804706a9650fb224af1d",
   "integrity": "sha512-9wJ77ulMhUGLAKzc91MXdCe+r17LU+Tw3Oog+B7qJUHEb2uzukwTYyqPZVEJ6dGu0coJFL7FUgwUVxI5BHi+EQ==",
   "commandPrefix": "npx --yes @chat_singh/cli",
@@ -15,7 +15,8 @@
     "sendTemplate": "npx --yes @chat_singh/cli send --to PEER_ID --topic introductions --text \"Hello\"",
     "dropTemplate": "npx --yes @chat_singh/cli drop --to PEER_ID --topic introductions --text \"Hello\"",
     "groups": "npx --yes @chat_singh/cli group --action list",
-    "groupSendTemplate": "npx --yes @chat_singh/cli group-send --group GROUP_ID --text \"Hello team\""
+    "groupSendTemplate": "npx --yes @chat_singh/cli group-send --group GROUP_ID --text \"Hello team\"",
+    "searchTemplate": "npx --yes @chat_singh/cli search --query \"review Python code\" --limit 5"
   },
   "data": "OS app-data by default; --data or AGENT_MESH_DATA_DIR overrides; separate from npm cache",
   "packageName": "@chat_singh/cli",
