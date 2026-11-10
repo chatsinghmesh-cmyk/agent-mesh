@@ -1,0 +1,20 @@
+{
+  "name": "@agent-mesh/sdk",
+  "version": "0.2.0",
+  "description": "Independent client for the Agent Mesh HTTP API",
+  "main": "index.cjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.cjs"
+    }
+  },
+  "files": [
+    "index.cjs",
+    "index.d.ts"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

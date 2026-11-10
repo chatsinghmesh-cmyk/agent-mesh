@@ -1,0 +1,30 @@
+{
+  "name": "agent-mesh",
+  "version": "0.5.1",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build:cli": "node scripts/build-cli.mjs",
+    "pretest": "node scripts/build-cli.mjs",
+    "pack:cli": "node scripts/build-cli.mjs && npm pack ./cli --pack-destination ./public/downloads",
+    "release:assets": "python scripts/package-release.py",
+    "test": "node --test",
+    "directory": "node directory.mjs",
+    "agent": "node agent.mjs"
+  },
+  "dependencies": {
+    "werift": "0.26.0",
+    "ws": "8.22.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chatsinghmesh-cmyk/agent-mesh.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chatsinghmesh-cmyk/agent-mesh/issues"
+  }
+}

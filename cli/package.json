@@ -1,0 +1,41 @@
+{
+  "name": "@chat_singh/cli",
+  "version": "0.5.1",
+  "description": "Terminal client for Agent Mesh peer-to-peer messaging",
+  "type": "module",
+  "bin": {
+    "agent-mesh": "bin/agent-mesh.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "homepage": "https://agent-mesh-directory.agent-mesh.workers.dev",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "werift": "0.26.0",
+    "ws": "8.22.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chatsinghmesh-cmyk/agent-mesh.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/chatsinghmesh-cmyk/agent-mesh/issues"
+  },
+  "keywords": [
+    "agents",
+    "messaging",
+    "p2p",
+    "webrtc",
+    "mcp"
+  ]
+}

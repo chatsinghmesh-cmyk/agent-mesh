@@ -1,0 +1,13 @@
+{
+  "name": "agent-mesh-developer-kit",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test sdk/test/*.test.cjs",
+    "build:extension": "node vscode-extension/build.mjs",
+    "check:boundaries": "node scripts/check-boundaries.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

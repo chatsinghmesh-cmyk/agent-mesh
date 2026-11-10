@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 130" fill="none" role="img" aria-label="Cave drawing of two peers and a campfire">
+<g stroke="#624d36" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M15 114 Q66 111 96 116 M207 115 Q251 110 289 115" opacity=".4"/>
+<path d="M45 30q-9-8-15 2t8 15q12-1 7-17Z M38 49l-3 34-14 23m14-23 17 24M37 58 19 74M39 59l26 8 18-12"/>
+<path d="m23 86 13-12 14 14-27-2Z" fill="#624d36"/>
+<path d="M249 29q11-9 16 3t-8 15q-12-2-8-18Z M257 48l5 35 15 22m-15-22-20 25M257 59l-24 7-14-11m40 5 20 12"/>
+<path d="m247 87 13-13 17 12-30 1Z" fill="#624d36"/>
+<path d="m95 39 20-7 4 16-21 6Z M96 40l12 5 7-12" stroke="#a44329"/>
+<path d="M131 38q29-15 61 1m-9-8 10 9-12 3" stroke-dasharray="3 7" stroke-width="2.5"/>
+<path d="m132 111 37 5m-36 2 37-12"/>
+<path d="M143 103q-15-11-2-28 1 12 10 14 11-17 4-28 28 24 8 42" fill="#b65430" stroke="#a44329"/>
+<path d="M147 103q-5-8 4-17 0 7 6 10l-2 7" stroke="#efc878" stroke-width="4"/>
+<path d="m146 50-3-7m20 10 5-5m-38 16-5-2" stroke="#a44329" stroke-width="2"/>
+</g></svg>

@@ -1,0 +1,11 @@
+import {mkdir,copyFile,readFile,writeFile,chmod} from 'node:fs/promises';
+const root=new URL('../',import.meta.url),lib=new URL('cli/lib/',root);
+await mkdir(lib,{recursive:true});
+for(const name of ['agent.mjs','crypto.mjs','webrtc.mjs'])await copyFile(new URL(name,root),new URL(name,lib));
+const core=JSON.parse(await readFile(new URL('package.json',root),'utf8'));
+const path=new URL('cli/package.json',root),pkg=JSON.parse(await readFile(path,'utf8'));
+pkg.dependencies=core.dependencies;await writeFile(path,JSON.stringify(pkg,null,2)+'\n');
+await chmod(new URL('cli/bin/agent-mesh.mjs',root),0o755);
+await copyFile(new URL('README.md',root),new URL('cli/README.md',root));
+await copyFile(new URL('LICENSE',root),new URL('cli/LICENSE',root));
+console.log('Built standalone CLI with an explicit public-file allowlist.');

@@ -1,0 +1,50 @@
+{
+  "name": "agent-mesh-tools",
+  "displayName": "Agent Mesh Tools",
+  "description": "Developer starter: discover peers and send messages through your local Agent Mesh API.",
+  "version": "0.2.0",
+  "publisher": "agent-mesh-local",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.cjs",
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "vscode:prepublish": "node build.mjs"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentMesh.configure",
+        "title": "Agent Mesh: Configure Local Connection"
+      },
+      {
+        "command": "agentMesh.topics",
+        "title": "Agent Mesh: Find Topics"
+      },
+      {
+        "command": "agentMesh.send",
+        "title": "Agent Mesh: Send Message"
+      },
+      {
+        "command": "agentMesh.history",
+        "title": "Agent Mesh: View Local History"
+      },
+      {
+        "command": "agentMesh.disconnect",
+        "title": "Agent Mesh: Forget API Token"
+      }
+    ]
+  }
+}
