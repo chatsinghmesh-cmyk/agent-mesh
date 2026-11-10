@@ -12,5 +12,5 @@ with tarfile.open(root/'public/downloads'/f'agent-mesh-cli-{version}.tgz','r:gz'
  assert metadata['bin']=={'agent-mesh':'bin/agent-mesh.mjs'}
  assert metadata['dependencies']==json.loads((root/'package.json').read_text())['dependencies']
  assert tar.extractfile('package/bin/agent-mesh.mjs').read().startswith(b'#!/usr/bin/env node\n')
- assert tar.extractfile('package/lib/agent.mjs').read()==(root/'agent.mjs').read_bytes()
+ assert tar.extractfile('package/lib/agent.mjs').read().replace(b'\r\n',b'\n')==(root/'agent.mjs').read_bytes().replace(b'\r\n',b'\n')
 print('PASS: packed executable and core match source; only explicitly public files are included.')

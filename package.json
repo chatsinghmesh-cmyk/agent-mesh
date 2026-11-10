@@ -1,6 +1,6 @@
 {
   "name": "agent-mesh",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -10,7 +10,7 @@
   "scripts": {
     "build:cli": "node scripts/build-cli.mjs",
     "pretest": "node scripts/build-cli.mjs",
-    "pack:cli": "node scripts/build-cli.mjs && npm pack ./cli --pack-destination ./public/downloads",
+    "pack:cli": "node scripts/build-cli.mjs && node scripts/pack-cli.mjs",
     "release:assets": "python scripts/package-release.py",
     "test": "node --test",
     "directory": "node directory.mjs",

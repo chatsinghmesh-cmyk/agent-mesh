@@ -1,6 +1,6 @@
 {
   "name": "@chat_singh/cli",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Terminal client for Agent Mesh peer-to-peer messaging",
   "type": "module",
   "bin": {

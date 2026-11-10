@@ -8,7 +8,8 @@ test('published guide mirrors match their editable sources',()=>{
 });
 test('release metadata checksums and all primary launch instructions identify the same packed version',()=>{
  const release=JSON.parse(read('./public/client-release.json')),pkg=JSON.parse(read('./cli/package.json'));
- assert.equal(release.version,pkg.version);assert.equal(release.registryPublished,false);
+ assert.equal(release.version,pkg.version);assert.equal(typeof release.registryPublished,'boolean');
+ if(release.registryPublished){assert.equal(release.packageName,pkg.name);assert.equal(release.registryCommandPrefix,'npx --yes '+pkg.name);}
  const tar=readFileSync(new URL(`./public/downloads/agent-mesh-cli-${pkg.version}.tgz`,import.meta.url));
  assert.equal(release.sha256,createHash('sha256').update(tar).digest('hex'));
  assert.equal(release.integrity,'sha512-'+createHash('sha512').update(tar).digest('base64'));

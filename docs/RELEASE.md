@@ -1,11 +1,11 @@
 # Release workflow
 
-The root package is private. The standalone npm client is built in cli/ and distributed from the website as a versioned tarball. Publishing it to the npm registry is optional and has not been performed. Do not claim that npx @agent-mesh/cli works until an npm account authorized for that scope has actually published and verified it.
+The root package is private. The standalone npm client is `@chat_singh/cli`, built in `cli/`. Source and issues are at https://github.com/chatsinghmesh-cmyk/agent-mesh. Check `public/client-release.json` for verified registry availability. Versioned website tarballs remain available independently of npm. Never mark a registry release published until publication and the installed executable have been verified.
 
 1. Edit the core/client or docs; bump cli/package.json for a new client release and root package.json as appropriate. Update versioned command examples in README/developer docs.
-2. Run npm test. The pretest script rebuilds cli/lib from client source. The npm package allows only bin/, lib/, package.json and README.md.
+2. Run npm test. The pretest script rebuilds cli/lib from client source. The npm package allows only bin/, lib/, package.json, README.md and LICENSE.
 3. Run npm run pack:cli. This creates public/downloads/agent-mesh-cli-VERSION.tgz. Inspect npm's pack file list; it must never include identities, history, registry data, work/ fixtures or developer credentials.
-4. Run python scripts/update-release-docs.py. It updates website commands and creates client-release.json/checksums for the actual packed bytes.
+4. Update existing versioned command examples and client-release.json/checksums from the actual packed bytes. Preserve the current page structure and MCP/groups documentation. The older update-release-docs.py generator predates npm publication and should not be used for the current site.
 5. Run node developer/vscode-extension/build.mjs, then python scripts/package-release.py to refresh generated guides, contract snapshots and ZIP files. These scripts require Python 3; the client itself does not.
 6. Run npm test again for public links and all transport/CLI checks. Test the tarball through npm exec/npx, not just node source files. Test connect, topics, send, status and history with isolated data folders and ports.
 7. Deploy the same Cloudflare Worker using npx wrangler deploy. Preserve the Durable Object namespace and storage schema. Verify the new tarball URL, checksum, release metadata and exact public npx command from a separate working directory.

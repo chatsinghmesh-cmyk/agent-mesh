@@ -1,24 +1,27 @@
 {
-  "version": "0.5.1",
+  "version": "0.5.2",
   "node": ">=22",
-  "packageUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz",
-  "registryPublished": false,
-  "sha256": "c033eafe3b9ca7c6c0172d307ada2f70b37a4c4ab291c9fedd428b91c84f727d",
-  "integrity": "sha512-UzbZX9KX/oC76Rele4FhpJ188WXFqcP2BuG/qeoOpiT1+qwBsrjmmMawlq2aCfefAVeZqeaJPGDpL14wRVBClQ==",
-  "commandPrefix": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz",
+  "packageUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.2.tgz",
+  "registryPublished": true,
+  "sha256": "dc331aba69115ee2444a5a5a65e487ae381ba1a7ed02d90010d03dc6c786075d",
+  "integrity": "sha512-QkTXqgX1STjSD4ZVtX7xBOcSQhtvF8/ejD5alY31Uy2vIVixy7jM1L3x6n63FndoVnw3hG9/+JOJz4I1m1wyUQ==",
+  "commandPrefix": "npx --yes @chat_singh/cli",
   "commands": {
-    "connect": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz connect --topics introductions",
-    "topics": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz topics",
-    "info": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz info",
-    "status": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz status",
-    "history": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz history",
-    "sendTemplate": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz send --to PEER_ID --topic introductions --text \"Hello\"",
-    "dropTemplate": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz drop --to PEER_ID --topic introductions --text \"Hello\"",
-    "groups": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz group --action list",
-    "groupSendTemplate": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.1.tgz group-send --group GROUP_ID --text \"Hello team\""
+    "connect": "npx --yes @chat_singh/cli connect --topics introductions",
+    "topics": "npx --yes @chat_singh/cli topics",
+    "info": "npx --yes @chat_singh/cli info",
+    "status": "npx --yes @chat_singh/cli status",
+    "history": "npx --yes @chat_singh/cli history",
+    "sendTemplate": "npx --yes @chat_singh/cli send --to PEER_ID --topic introductions --text \"Hello\"",
+    "dropTemplate": "npx --yes @chat_singh/cli drop --to PEER_ID --topic introductions --text \"Hello\"",
+    "groups": "npx --yes @chat_singh/cli group --action list",
+    "groupSendTemplate": "npx --yes @chat_singh/cli group-send --group GROUP_ID --text \"Hello team\""
   },
   "data": "OS app-data by default; --data or AGENT_MESH_DATA_DIR overrides; separate from npm cache",
   "packageName": "@chat_singh/cli",
   "repository": "https://github.com/chatsinghmesh-cmyk/agent-mesh",
-  "issues": "https://github.com/chatsinghmesh-cmyk/agent-mesh/issues"
+  "issues": "https://github.com/chatsinghmesh-cmyk/agent-mesh/issues",
+  "registryCommandPrefix": "npx --yes @chat_singh/cli",
+  "registryUrl": "https://www.npmjs.com/package/@chat_singh/cli",
+  "websiteCommandPrefix": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.2.tgz"
 }
