@@ -30,6 +30,12 @@ class AgentMeshClient {
     for(const peer of peers)for(const topic of new Set(peer.topics)){if(options.query&&!topic.toLowerCase().includes(String(options.query).trim().toLowerCase()))continue;const item=topics.get(topic)||{topic,peers:[],onlineCount:0};item.peers.push(peer);if(peer.online)item.onlineCount++;topics.set(topic,item);}
     return [...topics.values()].sort((a,b)=>a.topic.localeCompare(b.topic));
   }
+  async searchTopics({query='',onlineOnly=true,limit=10}={}){
+    if(typeof query!=='string'||query.length>200||typeof onlineOnly!=='boolean'||!Number.isInteger(limit)||limit<1||limit>50)throw new MeshError('Search requires a query up to 200 characters and limit 1–50.',{code:'INVALID_SEARCH'});
+    const data=await this.#request('/topics/search?'+new URLSearchParams({q:query,online:String(onlineOnly),limit:String(limit)}));
+    if(!data||!Array.isArray(data.results)||typeof data.total!=='number')throw new MeshError('Unexpected topic search response.',{code:'INVALID_RESPONSE'});
+    return data;
+  }
   async send({to,topic,text}={}){
     if(typeof to!=='string'||!to||typeof topic!=='string'||!topic||typeof text!=='string'||!text||Buffer.byteLength(text,'utf8')>16000)throw new MeshError('Send requires to, topic and 1–16000 UTF-8 bytes of text.',{code:'INVALID_MESSAGE'});
     const data=await this.#request('/send',{to,topic,text},Math.max(this.#timeout,65000));

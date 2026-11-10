@@ -4,7 +4,7 @@ import {handleDrops} from './drops.mjs';
 import {handleGroups} from './groups.mjs';
 export default {fetch(request,env){
   const path=new URL(request.url).pathname;
-  if(path.startsWith('/groups/')||['/topics','/register','/presence','/offline','/connect','/drops/send','/drops/pull','/drops/ack'].includes(path))return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(request);
+  if(path.startsWith('/groups/')||['/topics','/topics/search','/register','/presence','/offline','/connect','/drops/send','/drops/pull','/drops/ack'].includes(path))return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(request);
   return env.ASSETS.fetch(request);
 }};
 export class Directory {
@@ -42,7 +42,7 @@ export class Directory {
           if(url.pathname==='/drops/send'&&status<300&&this.state.storage.setAlarm){const next=await this.state.storage.getAlarm();if(!next||next>result.expires)await this.state.storage.setAlarm(result.expires);}
           return Response.json(result,{status,headers:{'cache-control':'no-store'}});
         }
-        const [status,result]=this.registry.handle(req.method,new URL(req.url).pathname,raw?JSON.parse(raw):{},(req.headers.get('authorization')||'').replace(/^Bearer /,''));
+        const [status,result]=this.registry.handle(req.method,url.pathname,raw?JSON.parse(raw):{},(req.headers.get('authorization')||'').replace(/^Bearer /,''),url.searchParams);
         if(req.method==='POST'&&status<300)await this.state.storage.put('records',this.registry.records);
         return Response.json(result,{status,headers:{'cache-control':'no-store'}});
       });

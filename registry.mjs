@@ -1,10 +1,12 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import {searchTopics} from './topic-search.mjs';
 export const hash = s => createHash('sha256').update(s).digest('hex');
 export class Registry {
   constructor(records = {}) { this.records = records; }
   authenticate(id,token='') { const a=this.records[id];return !!a&&timingSafeEqual(Buffer.from(a.tokenHash),Buffer.from(hash(token))); }
-  handle(method, path, body = {}, token = '') {
+  handle(method, path, body = {}, token = '', params = new URLSearchParams()) {
     const now = Date.now();
+    if(method==='GET'&&path==='/topics/search'){try{return [200,searchTopics(Object.values(this.records),params,now)];}catch(e){return [400,{error:e.message}];}}
     if (method === 'GET' && path === '/topics') return [200, Object.values(this.records).map(({tokenHash,...a}) => ({...a, online: now-a.seen < 90000}))];
     if (method === 'POST' && path === '/register') {
       const {id, signingKey, encryptionKey} = body;

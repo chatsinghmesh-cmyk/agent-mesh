@@ -20,7 +20,7 @@ const server=http.createServer(async(req,res)=>{
     let response;
     if(path.startsWith('/groups/')){if(req.method!=='POST')response=[405,{error:'POST required'}];else{const next=structuredClone(groups);response=handleGroups(next,registry,path,body,token);if(response[0]<300&&!['/groups/list','/groups/view'].includes(path)){writeFileSync(groupFile+'.tmp',JSON.stringify(next),{mode:0o600});renameSync(groupFile+'.tmp',groupFile);groups=next;}}}
     else if(path.startsWith('/drops/')){if(req.method!=='POST')response=[405,{error:'POST required'}];else{const job=dropQueue.then(()=>handleDrops(dropStorage,registry,path,body,token));dropQueue=job.catch(()=>{});response=await job;}}
-    else response=registry.handle(req.method,path,body,token);
+    else response=registry.handle(req.method,path,body,token,new URL(req.url,'http://localhost').searchParams);
     const [status,result]=response;
     if(req.method==='POST'&&status<300){writeFileSync(file+'.tmp',JSON.stringify(records),{mode:0o600});renameSync(file+'.tmp',file);chmodSync(file,0o600);}
     res.writeHead(status,{'content-type':'application/json'}).end(JSON.stringify(result));

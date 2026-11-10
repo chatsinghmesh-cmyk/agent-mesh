@@ -42,3 +42,7 @@ Groups (0.5.0+): approval-required membership, owner/admin roles, roster control
 ## MCP adapter
 
 `developer/mcp` exposes nine tools over local stdio using the official MCP SDK: topic search, direct sends, offline drops, filtered history, group listing/viewing/creation/administration/sending. Requires Node 22+, its own `npm ci`, a running agent and local API credentials. It does not automatically start agents or reply. See `/mcp-guide.md`.
+
+## Ranked topic search (0.6.0)
+
+Cloudflare GET /topics/search ranks advertised names with keyword coverage, limited related terms and one-character typos. Website task search, identity-free CLI search, local API proxy, SDK searchTopics() and updated MCP search_topics share the ranked response. Online topics by default, explicit offline inclusion, bounded results/peer samples, no chat analysis or external AI service. See /topic-search.md.

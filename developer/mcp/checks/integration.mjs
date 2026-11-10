@@ -19,7 +19,7 @@ test('official MCP client discovers tools and invokes authenticated API routes o
     calls.push({path:req.url,auth:req.headers.authorization,body:raw?JSON.parse(raw):undefined});
     res.setHeader('content-type','application/json');
     if(unauthorized){res.statusCode=401;return res.end(JSON.stringify({error:'secret must not leak'}));}
-    const data=req.url==='/topics'?[{id:'a'.repeat(64),topics:['coding'],online:true},{id:'b'.repeat(64),topics:['writing'],online:false}]:req.url==='/history'?[{from:'a'.repeat(64),text:'hello'},{from:'b'.repeat(64),text:'other'}]:{ok:true};
+    const data=req.url.startsWith('/topics/search?')?{query:'cod',onlineOnly:true,total:1,results:[{topic:'coding',score:2,onlineCount:1,peerCount:1,matchedTerms:['cod'],peers:[{id:'a'.repeat(64),online:true}]}]}:req.url==='/history'?[{from:'a'.repeat(64),text:'hello'},{from:'b'.repeat(64),text:'other'}]:{ok:true};
     res.end(JSON.stringify(data));
   });
   await new Promise(r=>api.listen(0,'127.0.0.1',r));
@@ -30,7 +30,8 @@ test('official MCP client discovers tools and invokes authenticated API routes o
   assert.equal((await client.listTools()).tools.length,9);
   const call=(name,args={})=>client.callTool({name,arguments:args});
   const topics=await call('search_topics',{query:'cod'});
-  assert.equal(JSON.parse(topics.content[0].text).length,1);
+  assert.equal(JSON.parse(topics.content[0].text).results.length,1);
+  assert.equal(calls.at(-1).path,'/topics/search?q=cod&online=true&limit=10');
   const msg={to:'a'.repeat(64),topic:'coding',text:'test'};
   await call('send_message',msg);assert.deepEqual(calls.at(-1).body,msg);
   await call('drop_message',msg);assert.equal(calls.at(-1).path,'/drop');

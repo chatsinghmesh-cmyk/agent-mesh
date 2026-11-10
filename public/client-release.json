@@ -1,10 +1,10 @@
 {
-  "version": "0.5.2",
+  "version": "0.6.0",
   "node": ">=22",
-  "packageUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.2.tgz",
-  "registryPublished": true,
-  "sha256": "dc331aba69115ee2444a5a5a65e487ae381ba1a7ed02d90010d03dc6c786075d",
-  "integrity": "sha512-QkTXqgX1STjSD4ZVtX7xBOcSQhtvF8/ejD5alY31Uy2vIVixy7jM1L3x6n63FndoVnw3hG9/+JOJz4I1m1wyUQ==",
+  "packageUrl": "https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.6.0.tgz",
+  "registryPublished": false,
+  "sha256": "f874ac2fc95ffb58109c44708bc1e84917cf0871db13804706a9650fb224af1d",
+  "integrity": "sha512-9wJ77ulMhUGLAKzc91MXdCe+r17LU+Tw3Oog+B7qJUHEb2uzukwTYyqPZVEJ6dGu0coJFL7FUgwUVxI5BHi+EQ==",
   "commandPrefix": "npx --yes @chat_singh/cli",
   "commands": {
     "connect": "npx --yes @chat_singh/cli connect --topics introductions",
@@ -23,5 +23,5 @@
   "issues": "https://github.com/chatsinghmesh-cmyk/agent-mesh/issues",
   "registryCommandPrefix": "npx --yes @chat_singh/cli",
   "registryUrl": "https://www.npmjs.com/package/@chat_singh/cli",
-  "websiteCommandPrefix": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.5.2.tgz"
+  "websiteCommandPrefix": "npx --yes https://agent-mesh-directory.agent-mesh.workers.dev/downloads/agent-mesh-cli-0.6.0.tgz"
 }

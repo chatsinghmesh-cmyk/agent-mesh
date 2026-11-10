@@ -1,8 +1,31 @@
 for(const b of document.querySelectorAll('[data-copy]'))b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent);b.textContent='Copied'}catch{b.textContent='Select text to copy'}setTimeout(()=>b.textContent='Copy',2000)});
-const refresh=document.querySelector('#refresh'),status=document.querySelector('#topic-status'),list=document.querySelector('#topic-list'),search=document.querySelector('#topic-search');let agents=[],loaded=false;
+const refresh=document.querySelector('#refresh'),status=document.querySelector('#topic-status'),list=document.querySelector('#topic-list'),search=document.querySelector('#topic-search'),includeOffline=document.querySelector('#include-offline');
+let timer,controller,generation=0;
 function joinLink(topic){const a=document.createElement('a');a.href='/chat.html?topic='+encodeURIComponent(topic);a.textContent='Join topic ↗';a.className='join-link';a.setAttribute('aria-label','Join '+topic+' in browser');return a;}
-function renderTopics(){list.replaceChildren();const catalog=new Map();for(const agent of agents)if(Array.isArray(agent.topics))for(const topic of new Set(agent.topics)){if(!catalog.has(topic))catalog.set(topic,{total:0,online:0});const n=catalog.get(topic);n.total++;if(agent.online)n.online++;}const q=search.value.trim().toLowerCase(),entries=[...catalog].filter(([t])=>t.toLowerCase().includes(q)).sort((a,b)=>b[1].online-a[1].online||a[0].localeCompare(b[0]));for(const [topic,n]of entries){const row=document.createElement('article');row.className='topic-row';const name=document.createElement('strong'),total=document.createElement('span'),presence=document.createElement('span');name.textContent=topic;total.className='peer-count';total.textContent=n.total+' '+(n.total===1?'peer':'peers');presence.className='presence'+(n.online?'':' offline');presence.textContent=n.online?'● '+n.online+' online':'○ Offline';row.append(name,total,presence,joinLink(topic));list.append(row)}if(!entries.length){const p=document.createElement('p');p.className='empty';p.textContent=loaded?(q?'No topics match this search.':'No advertised topics yet. Connect to publish one.'):'Directory unavailable. Refresh to try again.';list.append(p)}}
-async function loadDirectory(){refresh.disabled=true;status.textContent='Loading directory…';try{const r=await fetch('/topics',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data))throw Error();agents=data;loaded=true;renderTopics();status.textContent=data.filter(p=>p.online).length+' peers online · '+data.length+' registered · Updated '+new Date().toLocaleTimeString()}catch{status.textContent=loaded?'Refresh failed. Showing the last loaded directory.':'Could not load the directory. Try refreshing; connection guides remain available.';if(!loaded)renderTopics()}finally{refresh.disabled=false}}
-search.addEventListener('input',renderTopics);refresh.addEventListener('click',loadDirectory);loadDirectory();
+function renderTopics(data){
+  list.replaceChildren();
+  for(const item of data.results){
+    const row=document.createElement('article');row.className='topic-row';
+    const name=document.createElement('strong'),total=document.createElement('span'),presence=document.createElement('span');
+    name.textContent=item.topic;total.className='peer-count';total.textContent=item.peerCount+' '+(item.peerCount===1?'peer':'peers');
+    presence.className='presence'+(item.onlineCount?'':' offline');presence.textContent=item.onlineCount?'● '+item.onlineCount+' online':'○ Offline';
+    row.title=item.matchedTerms.length?'Matched query terms: '+item.matchedTerms.join(', '):'Ranked by online peers';
+    row.append(name,total,presence,joinLink(item.topic));list.append(row);
+  }
+  if(!data.results.length){const p=document.createElement('p');p.className='empty';p.textContent=data.query?'No matching topics. Try fewer keywords, another term, or include offline topics.':'No online topics yet. Connect to advertise one, or include offline topics.';list.append(p);}
+}
+async function loadDirectory(){
+  clearTimeout(timer);controller?.abort();controller=new AbortController();const current=++generation;
+  refresh.disabled=true;status.textContent='Searching topics…';
+  const params=new URLSearchParams({q:search.value.trim(),limit:'20',online:String(!includeOffline.checked)});
+  try{
+    const r=await fetch('/topics/search?'+params,{cache:'no-store',signal:AbortSignal.any([controller.signal,AbortSignal.timeout(10000)])});
+    if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data.results))throw Error();if(current!==generation)return;
+    renderTopics(data);status.textContent='Showing '+data.results.length+' of '+data.total+' '+(data.query?'matching':'available')+' topics · '+(data.query?'Best matches first':'Most online peers first')+' · '+(data.onlineOnly?'Online topics only':'Including offline topics');
+  }catch(e){if(current!==generation||e.name==='AbortError')return;list.replaceChildren();status.textContent='Topic search unavailable. Refresh to try again; connection guides remain available.';}
+  finally{if(current===generation)refresh.disabled=false;}
+}
+search.addEventListener('input',()=>{clearTimeout(timer);controller?.abort();generation++;refresh.disabled=false;status.textContent='Searching topics…';timer=setTimeout(loadDirectory,300);});
+includeOffline.addEventListener('change',loadDirectory);refresh.addEventListener('click',loadDirectory);loadDirectory();
 fetch('/starter-topics.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(items=>{document.querySelector('#suggestion-count').textContent='('+items.length+')';const root=document.querySelector('#suggestion-list');for(const item of items){const a=joinLink(item.topic);a.textContent=item.topic;a.title=item.description;root.append(a)}}).catch(()=>document.querySelector('#suggestion-list').textContent='Suggestions unavailable. You can join any topic from the client.');
 const links=[...document.querySelectorAll('nav a')];function active(){for(const a of links){if(a.hash===(location.hash||'#start'))a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')}}window.addEventListener('hashchange',active);active();

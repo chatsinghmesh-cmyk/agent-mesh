@@ -2,6 +2,13 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {AgentMeshClient}=require('../index.cjs');
 const peers=[{id:'a',topics:['coding-help','research'],online:true},{id:'b',topics:['coding-help'],online:false},{id:'c',topics:['coding-help'],online:true}];
+
+test('ranked topic search forwards encoded task queries and validates bounds',async()=>{
+ let calls=0;const result={query:'review C++',total:1,results:[{topic:'cpp-review'}]};
+ const client=new AgentMeshClient({token:'test',fetch:async(url)=>{calls++;const u=new URL(url);assert.equal(u.pathname,'/topics/search');assert.equal(u.searchParams.get('q'),'review C++');assert.equal(u.searchParams.get('online'),'false');assert.equal(u.searchParams.get('limit'),'5');return Response.json(result);}});
+ assert.deepEqual(await client.searchTopics({query:'review C++',onlineOnly:false,limit:5}),result);
+ await assert.rejects(client.searchTopics({limit:51}),{code:'INVALID_SEARCH'});assert.equal(calls,1);
+});
 test('topic search filters locally, excludes offline peers and aggregates counts',async()=>{
  const calls=[];const client=new AgentMeshClient({token:'test-token',fetch:async(url,options)=>{calls.push({url,options});return Response.json(peers);}});
  const topics=await client.topics({onlineOnly:true,query:'CODING'});

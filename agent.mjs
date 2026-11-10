@@ -6,7 +6,7 @@ import {identity,seal,open} from './crypto.mjs';
 const args=process.argv.slice(2);let command=args.shift()||'help';
 const DEFAULT_DIRECTORY='https://agent-mesh-directory.agent-mesh.workers.dev';
 const option=(name,fallback)=>{const i=args.indexOf('--'+name);return i<0?fallback:args[i+1];};
-const home=resolve(option('data','./agent-data'));mkdirSync(home,{recursive:true,mode:0o700});
+const home=resolve(option('data','./agent-data'));if(command!=='search')mkdirSync(home,{recursive:true,mode:0o700});
 const file=join(home,'identity.json');
 const save=x=>{writeFileSync(file+'.tmp',JSON.stringify(x,null,2),{mode:0o600});renameSync(file+'.tmp',file);};
 async function request(url,method='GET',body,token,timeoutMs=10000){const r=await fetch(url,{method,headers:{'content-type':'application/json',...(token?{authorization:'Bearer '+token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(timeoutMs)});const data=await r.json();if(!r.ok)throw Error(data.error||`HTTP ${r.status}`);return data;}
@@ -18,7 +18,13 @@ async function initialize(){
 async function readBody(req){let raw='';for await(const c of req){raw+=c;if(raw.length>65536)throw Error('Message too large');}return raw?JSON.parse(raw):{};}
 const reply=(res,status,data)=>res.writeHead(status,{'content-type':'application/json'}).end(JSON.stringify(data));
 async function main(){
- if(command==='help'){console.log('Commands: group --action list|create|view|request|approve|reject|remove|promote|demote|rename|close|reopen|leave [--group ID --member AGENT_ID --name NAME] | group-send --group ID --text MESSAGE | drop --to ID --topic NAME --text MESSAGE (max 500 characters) | connect --topics NAME | init [--directory URL] | use-directory --directory URL | topics [--starter] | info | status | history | serve --topics topic1,topic2 [--api-port 9001] [--endpoint URL --port 9000 for legacy HTTP] | send --to AGENT_ID --topic NAME --text MESSAGE\nAll commands accept --data PATH. connect initializes a hosted identity if needed and starts automatic direct WebRTC networking. See README.md.');return;}
+ if(command==='search'){
+  let saved;try{saved=JSON.parse(readFileSync(file,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
+  const params=new URLSearchParams({q:option('query',''),limit:option('limit','10'),online:args.includes('--include-offline')?'false':'true'});
+  const directory=option('directory',saved?.directory||DEFAULT_DIRECTORY).replace(/\/$/,'');
+  console.log(JSON.stringify(await request(directory+'/topics/search?'+params),null,2));return;
+ }
+ if(command==='help'){console.log('Commands: group --action list|create|view|request|approve|reject|remove|promote|demote|rename|close|reopen|leave [--group ID --member AGENT_ID --name NAME] | group-send --group ID --text MESSAGE | drop --to ID --topic NAME --text MESSAGE (max 500 characters) | connect --topics NAME | init [--directory URL] | use-directory --directory URL | search --query TASK [--limit NUMBER --include-offline] | topics [--starter] [--search TASK] | info | status | history | serve --topics topic1,topic2 [--api-port 9001] [--endpoint URL --port 9000 for legacy HTTP] | send --to AGENT_ID --topic NAME --text MESSAGE\nAll commands accept --data PATH. connect initializes a hosted identity if needed and starts automatic direct WebRTC networking. See README.md.');return;}
  if(command==='connect'){
   try{readFileSync(file);}catch(e){if(e.code!=='ENOENT')throw e;await initialize();}
   command='serve';
@@ -50,7 +56,7 @@ async function main(){
   console.log(JSON.stringify(await groupRequest(['list','view','create'].includes(action)?action:'action',{...body,action}),null,2));return;
  }
  if(command==='group-send'){const config=JSON.parse(readFileSync(join(home,'runtime.json'),'utf8'));console.log(JSON.stringify(await request(`http://127.0.0.1:${config.apiPort}/group-send`,'POST',{groupId:option('group'),text:option('text')},me.apiToken,65000),null,2));return;}
- if(command==='topics'){console.log(JSON.stringify(args.includes('--starter')?await request(me.directory+'/starter-topics.json'):await list(),null,2));return;}
+ if(command==='topics'){const params=new URLSearchParams({q:option('search',''),limit:option('limit','10'),online:args.includes('--include-offline')?'false':'true'});console.log(JSON.stringify(args.includes('--starter')?await request(me.directory+'/starter-topics.json'):args.includes('--search')?await request(me.directory+'/topics/search?'+params):await list(),null,2));return;}
  if(command==='send'||command==='drop'){const config=JSON.parse(readFileSync(join(home,'runtime.json'),'utf8'));console.log(await request(`http://127.0.0.1:${config.apiPort}/`+command,'POST',{to:option('to'),topic:option('topic'),text:option('text')},me.apiToken,65000));return;}
  if(command!=='serve')throw Error('Unknown command');
  const manualEndpoint=option('endpoint'),endpoint=manualEndpoint||`webrtc:${me.id}`;
@@ -106,6 +112,7 @@ async function main(){
  }catch(e){reply(res,400,{error:e.message});}});
  const apiServer=http.createServer(async(req,res)=>{try{
   if(req.headers.authorization!=='Bearer '+me.apiToken)return reply(res,401,{error:'API token required'});
+  if(req.method==='GET'&&new URL(req.url,'http://localhost').pathname==='/topics/search')return reply(res,200,await request(me.directory+req.url));
   if(req.method==='POST'&&req.url==='/send')return reply(res,200,await send(await readBody(req)));
   if(req.method==='POST'&&req.url==='/drop')return reply(res,200,await drop(await readBody(req)));
   if(req.method==='GET'&&req.url==='/groups')return reply(res,200,await groupRequest('list'));

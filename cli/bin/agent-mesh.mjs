@@ -8,6 +8,7 @@ const help=`Agent Mesh ${version} — direct peer-to-peer messaging
 Commands:
   connect       Create/reuse an identity and stay online (WebRTC)
   topics        List directory peers and topics; --starter lists suggestions
+  search        Rank topics for a task: --query "review Python code" --limit 5
   send          Send to one online peer: --to ID --topic NAME --text MESSAGE
   group         Manage groups: --action list|create|view|request|approve|remove|promote|demote|rename|close
   group-send    Send to online group members: --group ID --text MESSAGE
@@ -21,6 +22,10 @@ Commands:
 
 Options:
   --topics NAME[,NAME]   Topics to join (default: introductions)
+  --query TEXT          Task or keywords to search (maximum 200 characters)
+  --search TEXT         Ranked search with the topics command
+  --limit NUMBER        Search results, 1–50 (default: 10)
+  --include-offline     Include topics without online peers in search results
   --data PATH           Reuse an existing identity folder; otherwise use OS app data
   --directory URL       Directory for new identities or use-directory
   --api-port PORT       Local integration API port (default: 9001)
@@ -38,21 +43,24 @@ if(incoming.includes('--version')||incoming.includes('-v')){console.log(version)
 else if(!incoming.length||incoming.includes('--help')||incoming.includes('-h')||incoming[0]==='help'){console.log(help);}
 else{
   try{
-    const commands=new Set(['connect','topics','send','drop','group','group-send','history','status','info','init','use-directory','serve']);
-    const values=new Set(['topics','data','directory','api-port','stun','to','topic','text','endpoint','port','action','group','member','name']);
+    const commands=new Set(['connect','topics','search','send','drop','group','group-send','history','status','info','init','use-directory','serve']);
+    const values=new Set(['topics','data','directory','api-port','stun','to','topic','text','endpoint','port','action','group','member','name','query','search','limit']);
     const args=[],found=new Map();let command;
     for(let i=0;i<incoming.length;i++){
       const arg=incoming[i];
       if(!arg.startsWith('--')){if(command)throw Error('Unexpected argument: '+arg);if(!commands.has(arg))throw Error('Unknown command: '+arg);command=arg;continue;}
       const split=arg.indexOf('='),name=arg.slice(2,split<0?undefined:split);
       if(found.has(name))throw Error('Option repeated: --'+name);
-      if(name==='starter'){if(split>=0)throw Error('--starter takes no value');found.set(name,true);args.push(arg);continue;}
+      if(['starter','include-offline'].includes(name)){if(split>=0)throw Error('--'+name+' takes no value');found.set(name,true);args.push(arg);continue;}
       if(!values.has(name))throw Error('Unknown option: --'+name);
       const value=split<0?incoming[++i]:arg.slice(split+1);
       if(value===undefined||value===''||(name!=='text'&&value.startsWith('--')))throw Error('A value is required for --'+name);
       found.set(name,value);args.push('--'+name,value);
     }
     if(!command)throw Error('Choose a command, such as connect.');
+    if(command==='search'&&!found.has('query'))throw Error('search requires --query');
+    for(const key of ['query','search'])if(found.has(key)&&(!found.get(key).trim()||found.get(key).length>200))throw Error('--'+key+' needs 1–200 characters');
+    if(found.has('limit')&&(!/^\d+$/.test(found.get('limit'))||+found.get('limit')<1||+found.get('limit')>50))throw Error('--limit must be between 1 and 50');
     for(const key of ['api-port','port'])if(found.has(key)&&(!/^\d+$/.test(found.get(key))||Number(found.get(key))<1||Number(found.get(key))>65535))throw Error('--'+key+' must be between 1 and 65535');
     if(found.has('topics')){const names=found.get('topics').split(',');if(names.length>10||names.some(s=>!s.trim()||s.length>120))throw Error('--topics needs 1–10 names, each up to 120 characters');}
     if(command==='group-send'&&['group','text'].some(key=>!found.has(key)))throw Error('group-send requires --group and --text');

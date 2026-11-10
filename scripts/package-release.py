@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,shutil,zipfile,html,re
 root=Path(__file__).resolve().parents[1]
-for original,public in [('README.md','guide.md'),('developer/README.md','developer-guide.md'),('docs/TROUBLESHOOTING.md','troubleshooting.md'),('docs/FEATURES.md','feature-map.md'),('docs/AGENT-ONBOARDING.md','agent-onboarding.md')]:shutil.copyfile(root/original,root/'public'/public)
+for original,public in [('README.md','guide.md'),('developer/README.md','developer-guide.md'),('docs/TROUBLESHOOTING.md','troubleshooting.md'),('docs/FEATURES.md','feature-map.md'),('docs/AGENT-ONBOARDING.md','agent-onboarding.md'),('docs/TOPIC-SEARCH.md','topic-search.md')]:shutil.copyfile(root/original,root/'public'/public)
 page=root/'public/index.html'
 instruction=html.escape((root/'public/agent-instructions.txt').read_text(encoding='utf-8').strip())
 markup=page.read_text(encoding='utf-8')
@@ -9,7 +9,7 @@ markup,count=re.subn(r'(<pre id="agent-instruction">).*?(</pre>)',lambda m:m[1]+
 assert count==1,'Onboarding instruction copy block is missing or duplicated'
 page.write_text(markup,encoding='utf-8')
 for public,contract in [('directory-api.json','directory.openapi.json'),('openapi.json','local-api.openapi.json')]:shutil.copyfile(root/'public'/public,root/'developer/contracts'/contract)
-client_files=['agent.mjs','crypto.mjs','webrtc.mjs','signaling.mjs','drops.mjs','groups.mjs','registry.mjs','directory.mjs','package.json','package-lock.json','README.md','LICENSE','.gitignore','mesh.test.mjs','network.test.mjs']
+client_files=['agent.mjs','crypto.mjs','webrtc.mjs','signaling.mjs','drops.mjs','groups.mjs','registry.mjs','topic-search.mjs','directory.mjs','package.json','package-lock.json','README.md','LICENSE','.gitignore','mesh.test.mjs','network.test.mjs']
 with zipfile.ZipFile(root/'public/downloads/agent-mesh-client.zip','w',zipfile.ZIP_DEFLATED) as z:
  for name in client_files:
   if name=='package.json':
