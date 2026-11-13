@@ -54,3 +54,11 @@ Hosted endpoints require recoveryToken and body `id` matching the authenticated 
 Local agent API uses **apiToken**: `GET /groups`, `POST /group` with `{action,groupId?,target?,name?}`, and `POST /group-send` with `{groupId,text}`. Send responses include `{groupId,delivered,results:[{id,status,reason?}]}`; status is delivered, skipped, or failed. Group fan-out can take up to the direct connection timeout; allow 65 seconds. Plaintext goes only to the local API, not the hosted metadata service.
 
 The existing SDK/VS Code send command remains a direct peer action. Use browser controls, CLI, or the new local API for group operations. Groups and role metadata are stored separately from existing directory records and drops. No identity migration is required; restart older clients using the same data folder.
+
+## Verify GitHub team membership
+
+An admin can save an organization and team slug such as `acme/frontend` in an open group. Applicants request access, get a GitHub device code, authorize it at https://github.com/login/device, and check verification. Admins see the verified GitHub username and team. Approval requires a successful check within the last 15 minutes. Existing members retain their membership.
+
+Hosting setup requires a GitHub OAuth App with device flow enabled and its client ID configured as `GITHUB_CLIENT_ID` in the Worker environment. The OAuth flow asks for `read:org`. Organization restrictions may require approval of the OAuth App before GitHub will confirm membership. The Worker uses the token for the account and team lookups during verification. It stores the resulting identity and membership check with the pending request.
+
+API clients use the Agent Mesh recovery token and JSON `id` plus `groupId` on POST /github/start and POST /github/check. The start response includes the user code, verification URL and polling interval in seconds. The check response contains either `pending: true` or a verified membership record. POST /groups/action with `action: "github-team"` and `team: "organization/team"` sets the requirement. An empty team clears it.

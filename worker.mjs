@@ -2,13 +2,14 @@ import {Registry} from './registry.mjs';
 import {validateSignal} from './signaling.mjs';
 import {handleDrops} from './drops.mjs';
 import {handleGroups} from './groups.mjs';
+import {githubVerify} from './github-verify.mjs';
 export default {fetch(request,env){
   const path=new URL(request.url).pathname;
-  if(path.startsWith('/groups/')||['/topics','/topics/search','/register','/presence','/offline','/connect','/drops/send','/drops/pull','/drops/ack'].includes(path))return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(request);
+  if(path.startsWith('/groups/')||path.startsWith('/github/')||['/topics','/topics/search','/register','/presence','/offline','/connect','/drops/send','/drops/pull','/drops/ack'].includes(path))return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(request);
   return env.ASSETS.fetch(request);
 }};
 export class Directory {
-  constructor(state){this.state=state;this.ready=state.blockConcurrencyWhile(async()=>{this.registry=new Registry(await state.storage.get('records')||{});const entries=state.storage.list?await state.storage.list({prefix:'groupmeta:'}):new Map();this.groups=Object.fromEntries([...entries].map(([,g])=>[g.id,g]));});
+  constructor(state,env={}){this.state=state;this.env=env;this.ready=state.blockConcurrencyWhile(async()=>{this.registry=new Registry(await state.storage.get('records')||{});const entries=state.storage.list?await state.storage.list({prefix:'groupmeta:'}):new Map();this.groups=Object.fromEntries([...entries].map(([,g])=>[g.id,g]));});
     if(typeof WebSocketRequestResponsePair!=='undefined')state.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping','pong'));
   }
   async fetch(req){
@@ -28,12 +29,31 @@ export class Directory {
       }
       if(Number(req.headers.get('content-length')||0)>16384)return Response.json({error:'Too large'},{status:413});
       const raw=await req.text();if(raw.length>16384)return Response.json({error:'Too large'},{status:413});
+      if(url.pathname.startsWith('/github/')){
+        const reply=(data,status)=>Response.json(data,{status,headers:{'cache-control':'no-store'}});
+        if(req.method!=='POST')return reply({error:'POST required'},405);
+        const body=JSON.parse(raw);
+        if(!/^[a-f0-9]{64}$/.test(body.id||'')||!this.registry.authenticate(body.id,(req.headers.get('authorization')||'').replace(/^Bearer /,'')))return reply({error:'Invalid recovery token'},401);
+        if(!/^[a-f0-9]{32}$/.test(body.groupId||''))return reply({error:'Invalid group ID'},400);
+        const [status,result]=await githubVerify({storage:this.state.storage,clientId:this.env.GITHUB_CLIENT_ID,id:body.id,path:url.pathname,body,getGroup:id=>this.groups[id]}).catch(()=>[502,{error:'GitHub verification failed. Try again.'}]);
+        if(!result.verified)return reply(result,status);
+        return await this.state.blockConcurrencyWhile(async()=>{
+          const group=this.groups[body.groupId];
+          if(!group||group.closed||!group.requests.includes(body.id)||group.githubTeam!==result.verified.team)return reply({error:'The join request or team changed. Verify again.'},409);
+          const next=structuredClone(group);
+          (next.githubChecks??={})[body.id]=result.verified;
+          await this.state.storage.put('groupmeta:'+group.id,next);
+          this.groups[group.id]=next;
+          return reply(result,200);
+        });
+      }
       return await this.state.blockConcurrencyWhile(async()=>{
         if(url.pathname.startsWith('/groups/')){
           if(req.method!=='POST')return Response.json({error:'POST required'},{status:405});
           const body=raw?JSON.parse(raw):{},next={...this.groups};if(next[body.groupId])next[body.groupId]=structuredClone(next[body.groupId]);
+          if(body.action==='github-team'&&body.team&&!this.env.GITHUB_CLIENT_ID)return Response.json({error:'GitHub verification is awaiting app configuration'},{status:503});
           const [status,result]=handleGroups(next,this.registry,url.pathname,body,(req.headers.get('authorization')||'').replace(/^Bearer /,''));
-          if(status<300&&!['/groups/list','/groups/view'].includes(url.pathname)){const key=url.pathname==='/groups/create'?result.id:body.groupId;await this.state.storage.put('groupmeta:'+key,next[key]);this.groups=next;}
+          if(status<300&&!['/groups/list','/groups/view','/groups/verification'].includes(url.pathname)){const key=url.pathname==='/groups/create'?result.id:body.groupId;await this.state.storage.put('groupmeta:'+key,next[key]);this.groups=next;}
           return Response.json(result,{status,headers:{'cache-control':'no-store'}});
         }
         if(url.pathname.startsWith('/drops/')){
