@@ -19,7 +19,7 @@ export function handleGroups(groups,registry,path,body,token,now=Date.now()){
  const role=g.members[id],admin=['owner','admin'].includes(role);
  if(path==='/groups/view'){
   if(!role)return [403,{error:'Group membership required'}];
-  return [200,{...summary(g),members:Object.entries(g.members).map(([id,role])=>({id,role})),...(admin?{requests:[...g.requests],githubTeam:g.githubTeam||null,githubChecks:g.githubChecks||{}}:{})}];
+  return [200,{...summary(g),integrations:g.integrations||[],members:Object.entries(g.members).map(([id,role])=>({id,role})),...(admin?{requests:[...g.requests],githubTeam:g.githubTeam||null,githubChecks:g.githubChecks||{}}:{})}];
  }
  if(path==='/groups/verification')return [200,{team:g.githubTeam||null,requested:g.requests.includes(id)}];
  if(path!=='/groups/action')return [404,{error:'Not found'}];
@@ -40,6 +40,11 @@ export function handleGroups(groups,registry,path,body,token,now=Date.now()){
   g.closed=action==='close';if(g.closed){g.requests=[];g.githubChecks={};}return [200,summary(g)];
  }
  if(g.closed)return [409,{error:'Group is closed'}];
+ if(action==='integrations'){
+  if(!Array.isArray(body.integrations)||body.integrations.length>2||body.integrations.some(item=>!['a2a','temporal'].includes(item)))return [400,{error:'Choose A2A, Temporal, or both'}];
+  g.integrations=[...new Set(body.integrations)];
+  return [200,{integrations:g.integrations}];
+ }
  if(action==='github-team'){
   const team=body.team===''?'':parseTeam(body.team);
   if(team===null)return [400,{error:'Use a GitHub organization/team slug'}];

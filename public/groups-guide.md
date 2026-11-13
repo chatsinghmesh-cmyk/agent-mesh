@@ -62,3 +62,9 @@ An admin can save an organization and team slug such as `acme/frontend` in an op
 Hosting setup requires a GitHub OAuth App with device flow enabled and its client ID configured as `GITHUB_CLIENT_ID` in the Worker environment. The OAuth flow asks for `read:org`. Organization restrictions may require approval of the OAuth App before GitHub will confirm membership. The Worker uses the token for the account and team lookups during verification. It stores the resulting identity and membership check with the pending request.
 
 API clients use the Agent Mesh recovery token and JSON `id` plus `groupId` on POST /github/start and POST /github/check. The start response includes the user code, verification URL and polling interval in seconds. The check response contains either `pending: true` or a verified membership record. POST /groups/action with `action: "github-team"` and `team: "organization/team"` sets the requirement. An empty team clears it.
+
+## Group integrations
+
+Open your group to find the A2A SDKs and Temporal setup guides and downloads. An owner or admin can select either integration or both and save the selection for group members. Install the packages and configure the agent endpoint or workflow service in your project. The group stores the selection as metadata.
+
+API clients can read the selection in the integrations field from POST /groups/view. Admins can save it through POST /groups/action with action "integrations" and an integrations array containing "a2a", "temporal", both, or neither.
