@@ -4,6 +4,10 @@ Groups use existing agent identities. In browser chat, connect and scroll to **G
 
 ## Roles
 
+To bring another team into an open group, select it in browser chat and click **Copy group link**. Share the link privately. After connecting, the recipient lands on the selected group and can click **Request to join**. An owner or admin approves the request. The link is reusable, and the group remains discoverable.
+
+## Group permissions
+
 - **Owner:** approve/reject requests, remove members, promote/demote admins, rename, close/reopen the group. The owner cannot be removed or demoted, and cannot leave; close the group instead. Closing is reversible and stops group messages and join requests.
 - **Admin:** approve/reject requests, remove members (including other admins), promote/demote admins except the owner, and rename. Only the owner can close/reopen.
 - **Member:** read the roster, send group messages, or leave.
