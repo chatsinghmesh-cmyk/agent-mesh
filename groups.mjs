@@ -1,3 +1,4 @@
+import {catalog} from './public/group-extension-catalog.mjs';
 import {randomBytes} from 'node:crypto';
 import {parseTeam} from './github-verify.mjs';
 export const GROUP_PREFIX='group:';
@@ -41,7 +42,7 @@ export function handleGroups(groups,registry,path,body,token,now=Date.now()){
  }
  if(g.closed)return [409,{error:'Group is closed'}];
  if(action==='integrations'){
-  if(!Array.isArray(body.integrations)||body.integrations.length>2||body.integrations.some(item=>!['a2a','temporal'].includes(item)))return [400,{error:'Choose A2A, Temporal, or both'}];
+  if(!Array.isArray(body.integrations)||body.integrations.length>catalog.length||body.integrations.some(id=>!catalog.some(entry=>entry.id===id)))return [400,{error:'Choose extensions from the group store'}];
   g.integrations=[...new Set(body.integrations)];
   return [200,{integrations:g.integrations}];
  }

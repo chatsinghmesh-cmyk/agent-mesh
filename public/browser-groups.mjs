@@ -1,3 +1,4 @@
+import {catalog} from './group-extension-catalog.mjs';
 export function mountGroups({root,request,getOnline,send,status}){
  const requestedGroup=new URLSearchParams(location.search).get('group');
  let selected=/^[a-f0-9]{32}$/.test(requestedGroup||'')?requestedGroup:'',busy=false;
@@ -40,22 +41,19 @@ export function mountGroups({root,request,getOnline,send,status}){
    detail.append(button(item.requested?'Cancel join request':'Request to join',()=>act(item.requested?'cancel-request':'request')));return;}
   const group=await request('/groups/view',{groupId:selected}),admin=['owner','admin'].includes(group.role),isOwner=group.role==='owner';
   if(!group.closed){const form=el('form'),text=el('textarea'),textLabel=el('label','Group message');text.id='group-message';text.required=true;text.rows=3;text.maxLength=16000;textLabel.htmlFor=text.id;const submit=el('button','Send to online members');submit.className='button';submit.disabled=busy||!getOnline();form.append(textLabel,text,submit);form.onsubmit=e=>{e.preventDefault();task(async()=>{status('Sending directly to online group members…');const result=await send(selected,text.value);const failed=result.results.filter(x=>x.status==='failed').length,skipped=result.results.filter(x=>x.status==='skipped').length;status(`Group delivery: ${result.delivered} delivered, ${skipped} offline/skipped, ${failed} failed. No offline queue or automatic retry.`);text.value='';})};detail.append(form);}
-  const integrations=el('section');integrations.append(el('h3','Group integrations'),el('p','Find official packages and record which integrations your group uses. Set up each integration in your own project.'));
-  const catalog=[
-   {id:'a2a',name:'A2A',purpose:'Exchange tasks and results between agents.',guide:'https://a2a-protocol.org/latest/sdk/',download:'https://github.com/a2aproject/a2a-js/releases'},
-   {id:'temporal',name:'Temporal',purpose:'Run workflows that can resume after interruptions.',guide:'https://docs.temporal.io/quickstarts',download:'https://github.com/temporalio/cli/releases'}
-  ];
+  const integrations=el('section');integrations.append(el('h3','Group extensions'),el('p','Choose extensions from the store and set them up in your project.'));
+  const store=el('a','Browse the extension store');store.href='/group-extensions.html';integrations.append(store);
   const choices=[];
   for(const entry of catalog){
    const row=el('div'),label=el('label'),input=el('input');
    input.type='checkbox';input.value=entry.id;input.checked=(group.integrations||[]).includes(entry.id);input.disabled=!admin||group.closed;
-   label.append(input,document.createTextNode(' '+entry.name));row.append(label,el('p',entry.purpose));choices.push(input);
-   for(const [text,href] of [['Setup guide',entry.guide],['Official downloads',entry.download]]){
+   label.append(input,document.createTextNode(' '+entry.name));row.append(label,el('p',entry.purpose),el('small','By '+entry.author));choices.push(input);
+   for(const [text,href] of [['Setup guide',entry.guide],['Downloads',entry.download]]){
     const link=el('a',text);link.href=href;link.target='_blank';link.rel='noopener noreferrer';row.append(link,document.createTextNode(' '));
    }
    integrations.append(row);
   }
-  if(admin&&!group.closed)integrations.append(button('Save group integrations',()=>act('integrations',{integrations:choices.filter(input=>input.checked).map(input=>input.value)})));
+  if(admin&&!group.closed)integrations.append(button('Save group extensions',()=>act('integrations',{integrations:choices.filter(input=>input.checked).map(input=>input.value)})));
   detail.append(integrations);
   const members=el('div');members.append(el('h3','Members'));
   for(const member of group.members){const row=el('div');row.className='group-member';row.append(el('code',member.id),el('span',member.role));if(admin&&!group.closed&&member.role!=='owner'){row.append(button('Remove',()=>act('remove',{target:member.id})),button(member.role==='admin'?'Demote':'Make admin',()=>act(member.role==='admin'?'demote':'promote',{target:member.id})));}members.append(row)}detail.append(members);
