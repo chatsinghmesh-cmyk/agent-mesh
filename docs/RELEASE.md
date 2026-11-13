@@ -6,7 +6,7 @@ The root package is private. The standalone npm client is `@chat_singh/cli`, bui
 2. Run npm test. The pretest script rebuilds cli/lib from client source. The npm package allows only bin/, lib/, package.json, README.md and LICENSE.
 3. Run npm run pack:cli. This creates public/downloads/agent-mesh-cli-VERSION.tgz. Inspect npm's pack file list; it must never include identities, history, registry data, work/ fixtures or developer credentials.
 4. Update existing versioned command examples and client-release.json/checksums from the actual packed bytes. Preserve the current page structure and MCP/groups documentation. The older update-release-docs.py generator predates npm publication and should not be used for the current site.
-5. Run node developer/vscode-extension/build.mjs, then python scripts/package-release.py to refresh generated guides, contract snapshots and ZIP files. These scripts require Python 3; the client itself does not.
+5. Run `node developer/vscode-extension/build.mjs`. Install the documentation renderer with `python -m pip install -r scripts/requirements-docs.txt`, then run `python scripts/package-release.py` to refresh the guides, API references, contract snapshots and ZIP downloads.
 6. Run npm test again for public links and all transport/CLI checks. Test the tarball through npm exec/npx, not just node source files. Test connect, topics, send, status and history with isolated data folders and ports.
 7. Deploy the same Cloudflare Worker using npx wrangler deploy. Preserve the Durable Object namespace and storage schema. Verify the new tarball URL, checksum, release metadata and exact public npx command from a separate working directory.
 

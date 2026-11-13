@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,shutil,zipfile,html,re
+import json,shutil,zipfile,html,re,runpy
 root=Path(__file__).resolve().parents[1]
 shutil.copyfile(root/'developer/vscode-extension/README.md',root/'public/vscode-guide.md')
 shutil.copyfile(root/'developer/mcp/README.md',root/'public/mcp-guide.md')
@@ -21,3 +21,4 @@ with zipfile.ZipFile(root/'public/downloads/agent-mesh-developer-kit.zip','w',zi
  for f in (root/'developer').rglob('*'):
   if f.is_file() and 'node_modules' not in f.relative_to(root).parts:z.write(f,f.relative_to(root))
 print('Refreshed public guide mirrors, contract snapshots and source/developer ZIP downloads.')
+runpy.run_path(str(root/'scripts/render-docs.py'))
