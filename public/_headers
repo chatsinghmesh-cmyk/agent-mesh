@@ -4,6 +4,9 @@
   Content-Type: text/plain; charset=utf-8
 /guide.md
   Content-Type: text/plain; charset=utf-8
+/downloads/agent-mesh-tools-0.3.0.vsix
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment; filename="agent-mesh-tools-0.3.0.vsix"
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
