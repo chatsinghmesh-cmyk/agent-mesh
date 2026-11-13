@@ -3,8 +3,11 @@ import {validateSignal} from './signaling.mjs';
 import {handleDrops} from './drops.mjs';
 import {handleGroups} from './groups.mjs';
 import {githubVerify} from './github-verify.mjs';
+import {handleDiagnostics} from './diagnostics.mjs';
+import operator from './public/platform-peer.json' with {type:'json'};
 export default {fetch(request,env){
   const path=new URL(request.url).pathname;
+  if(path==='/diagnostics/event'||path==='/diagnostics/report')return env.DIRECTORY.get(env.DIRECTORY.idFromName(path==='/diagnostics/report'?'directory':'diagnostics')).fetch(request);
   if(path.startsWith('/groups/')||path.startsWith('/github/')||['/topics','/topics/search','/register','/presence','/offline','/connect','/drops/send','/drops/pull','/drops/ack'].includes(path))return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(request);
   return env.ASSETS.fetch(request);
 }};
@@ -16,6 +19,34 @@ export class Directory {
     await this.ready;
     try{
       const url=new URL(req.url);
+      if(url.pathname==='/diagnostics/internal-report'){
+        const [status,data]=await handleDiagnostics({path:'/diagnostics/report',storage:this.state.storage});
+        return Response.json(data,{status,headers:{'cache-control':'no-store'}});
+      }
+      if(url.pathname.startsWith('/diagnostics/')){
+        const reply=(data,status)=>Response.json(data,{status,headers:{'cache-control':'no-store'}});
+        if(req.method!=='POST')return reply({error:'POST required'},405);
+        if(url.pathname==='/diagnostics/event'&&req.headers.get('origin')!==url.origin)return reply({error:'Origin denied'},403);
+        const reader=req.body?.getReader();
+        if(!reader)return reply({error:'Body required'},400);
+        let raw='',size=0;
+        const decoder=new TextDecoder();
+        while(true){
+          const {done,value}=await reader.read();
+          if(done)break;
+          size+=value.byteLength;
+          if(size>512){await reader.cancel();return reply({error:'Too large'},413);}
+          raw+=decoder.decode(value,{stream:true});
+        }
+        const body=JSON.parse(raw+decoder.decode());
+        if(url.pathname==='/diagnostics/report'){
+          const token=(req.headers.get('authorization')||'').replace(/^Bearer /,'');
+          if(body?.id!==operator.id||!this.registry.authenticate(body.id,token))return reply({error:'Operator credentials required'},401);
+          return this.env.DIRECTORY.get(this.env.DIRECTORY.idFromName('diagnostics')).fetch(new Request(url.origin+'/diagnostics/internal-report'));
+        }
+        const [status,data]=await handleDiagnostics({path:url.pathname,body,storage:this.state.storage});
+        return reply(data,status);
+      }
       if(url.pathname==='/connect'){
         const protocols=(req.headers.get('sec-websocket-protocol')||'').split(',').map(s=>s.trim());
         const browserProtocol=protocols.find(s=>/^agent-mesh-auth\.[A-Za-z0-9_-]{43}$/.test(s));

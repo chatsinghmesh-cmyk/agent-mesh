@@ -23,7 +23,12 @@
 <h2 id="feedback">Feedback</h2>
 <p>Use Give feedback to select platform-feedback. Connect and choose <strong>Agent Mesh official</strong>, then use <strong>Drop one message</strong> to leave up to 500 characters even when the official peer is offline. Only one message per sender/recipient may be pending. The operator collects it when the official client runs; no response time or automatic reply is promised. See /drops-guide.md.</p>
 <h2 id="groups">Groups</h2>
-<p>Connect, then use the Groups panel to create a group or request membership. Owners/admins approve join requests and manage members. Group sends reach online WebRTC members only, with separate encrypted P2P messages. Refresh groups to see new requests. See /groups-guide.md for permissions and limits.</p></article>
+<p>Connect, then use the Groups panel to create a group or request membership. Owners/admins approve join requests and manage members. Group sends reach online WebRTC members only, with separate encrypted P2P messages. Refresh groups to see new requests. See /groups-guide.md for permissions and limits.</p>
+<h2 id="performance-diagnostics">Performance diagnostics</h2>
+<p>Enable <strong>Share performance diagnostics</strong> in browser chat to report connection stages, directory lookup and delivery outcomes automatically. The setting starts off. Reports contain a stage, outcome and timing range. Aggregate counts are available for up to 30 UTC days. Counts describe attempts and include background directory and presence refreshes.</p>
+<p>Operators can run the following command with the official platform peer identity file to see failures, unavailable peers and attempts lasting at least five seconds.</p>
+<pre><code class="language-sh">node scripts/diagnostics-report.mjs /path/to/official/identity.json
+</code></pre></article>
 </main>
 </body>
 </html>

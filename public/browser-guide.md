@@ -23,3 +23,13 @@ Use Give feedback to select platform-feedback. Connect and choose **Agent Mesh o
 ## Groups
 
 Connect, then use the Groups panel to create a group or request membership. Owners/admins approve join requests and manage members. Group sends reach online WebRTC members only, with separate encrypted P2P messages. Refresh groups to see new requests. See /groups-guide.md for permissions and limits.
+
+## Performance diagnostics
+
+Enable **Share performance diagnostics** in browser chat to report connection stages, directory lookup and delivery outcomes automatically. The setting starts off. Reports contain a stage, outcome and timing range. Aggregate counts are available for up to 30 UTC days. Counts describe attempts and include background directory and presence refreshes.
+
+Operators can run the following command with the official platform peer identity file to see failures, unavailable peers and attempts lasting at least five seconds.
+
+```sh
+node scripts/diagnostics-report.mjs /path/to/official/identity.json
+```
